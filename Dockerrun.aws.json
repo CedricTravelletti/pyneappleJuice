@@ -1,0 +1,92 @@
+{
+  "AWSEBDockerrunVersion": 2,
+  "volumes": [
+    {
+      "name": "UsrSrcAppSql",
+      "host": {
+        "sourcePath": "/usr/src/app/sql"
+      }
+    }
+  ],
+  "containerDefinitions": [
+    {
+      "name": "app",
+      "image": "161015140575.dkr.ecr.us-east-1.amazonaws.com/pyneapplejuice:pyneapplejuice_app",
+      "environment": [
+          {
+              "name": "FLASK_APP",
+              "value": "project/__init__.py"
+          },
+          {
+              "name": "FLASK_DEBUG",
+              "value": "1"
+          },
+          {
+              "name": "APP_SETTINGS",
+              "value": "project.config.DevConfig"
+          },
+          {
+              "name": "DATABASE_URL",
+              "value": "postgres://postgres:postgres@database:5432/users_dev"
+          },
+          {
+              "name": "DATABASE_TEST_URL",
+              "value": "postgres://postgres:postgres@database:5432/users_test"
+          }
+      ],
+      "essential": true,
+      "memory": 128,
+      "mountPoints": [
+        {
+          "sourceVolume": "UsrSrcAppSql",
+          "containerPath": "/usr/src/app/sql"
+        }
+      ],
+      "links": [
+          "database"
+      ]
+    },
+    {
+      "name": "proxy",
+      "image": "161015140575.dkr.ecr.us-east-1.amazonaws.com/pyneapplejuice:pyneapplejuice_proxy",
+      "essential": true,
+      "memory": 128,
+      "portMappings": [
+        {
+          "hostPort": 80,
+          "containerPort": 80
+        }
+      ],
+      "links": [
+        "app"
+      ],
+      "volumesFrom": [
+          {
+            "sourceContainer": "app"
+          }
+      ]
+    },
+    {
+      "name": "database",
+      "image": "161015140575.dkr.ecr.us-east-1.amazonaws.com/pyneapplejuice:pyneapplejuice_database",
+      "essential": true,
+      "memory": 128,
+      "portMappings": [
+        {
+          "hostPort": 5435,
+          "containerPort": 5432
+        }
+      ],
+      "environment": [
+        {
+          "name": "POSTGRES_USER",
+          "value": "postgres"
+        },
+        {
+          "name": "POSTGRES_PASSWORD",
+          "value": "postgres"
+        }
+      ]
+    }
+  ]
+}

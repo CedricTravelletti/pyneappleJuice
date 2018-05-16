@@ -1,0 +1,4 @@
+
+docker push 161015140575.dkr.ecr.us-east-1.amazonaws.com/pyneapplejuice:pyneapplejuice_database
+docker push 161015140575.dkr.ecr.us-east-1.amazonaws.com/pyneapplejuice:pyneapplejuice_proxy
+docker push 161015140575.dkr.ecr.us-east-1.amazonaws.com/pyneapplejuice:pyneapplejuice_app
